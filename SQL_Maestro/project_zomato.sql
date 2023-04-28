@@ -51,7 +51,7 @@ SELECT * FROM GOLDUSERS_SIGNUP;
 SELECT * FROM USERS;
 
 
-# 1- what is the total amount each customer spent on zomato?
+## 1- what is the total amount each customer spent on zomato?
 
 SELECT A.USER_ID, SUM(B.PRICE) Total_Amt_spent FROM SALES A
 INNER JOIN 
