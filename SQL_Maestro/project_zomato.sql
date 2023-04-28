@@ -51,30 +51,30 @@ SELECT * FROM GOLDUSERS_SIGNUP;
 SELECT * FROM USERS;
 
 
-1- what is the total amount each customer spent on zomato?\
+# 1- what is the total amount each customer spent on zomato?
 
 SELECT A.USER_ID, SUM(B.PRICE) Total_Amt_spent FROM SALES A
 INNER JOIN 
 PRODUCT B ON A.PRODUCT_ID = B.PRODUCT_ID 
 GROUP BY A.USER_ID;
 
-2- how many days each customer visited on zomato?  
+# 2- how many days each customer visited on zomato?  
 
 SELECT USER_ID, COUNT(DISTINCT CREATED_DATE) FROM SALES GROUP BY USER_ID;
 
-3- what was the first product purchased by each customer of zomato?
+# 3- what was the first product purchased by each customer of zomato?
 
 SELECT * FROM
 (SELECT *, RANK() OVER ( PARTITION BY USER_ID ORDER BY CREATED_DATE ) RANK FROM SALES) 
 A WHERE RANK = 1;
 
-4- what is the most purchase item on the menu ? 
+# 4- what is the most purchase item on the menu ? 
     
 SELECT TOP 2 PRODUCT_ID FROM SALES
 GROUP BY PRODUCT_ID
 ORDER BY COUNT(PRODUCT_ID) DESC;
 
-5- how many times that most selling item purchased by all customers?
+# 5- how many times that most selling item purchased by all customers?
 
 SELECT * FROM SALES
 WHERE PRODUCT_ID = 
@@ -82,7 +82,7 @@ WHERE PRODUCT_ID =
 GROUP BY PRODUCT_ID
 ORDER BY COUNT(PRODUCT_ID) DESC);
 
-6- which user_id purchased top most selling product?
+# 6- which user_id purchased top most selling product?
 
 SELECT USER_ID, COUNT(PRODUCT_ID) P_CNT FROM SALES
 WHERE PRODUCT_ID = 
@@ -92,7 +92,7 @@ ORDER BY COUNT(PRODUCT_ID) DESC)
 GROUP BY USER_ID;
 
 
-7- which item was most popular for each customer?
+# 7- which item was most popular for each customer?
 
 SELECT * FROM
 (SELECT *, RANK() OVER (PARTITION BY USER_ID 
