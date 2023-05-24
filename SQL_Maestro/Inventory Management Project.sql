@@ -415,7 +415,7 @@ SELECT * FROM PURCHASE;
 
 
 
-
+-- Now lets see all table together the results of our queries.
 
 SELECT * FROM ADD_SUP;
 SELECT * FROM ADD_PROD;
