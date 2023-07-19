@@ -43,3 +43,21 @@ It includes details such as product IDs, supplier IDs, purchase quantities, and 
 
 📥🛒
 By utilizing these tables and their relationships, the inventory management project ensures efficient handling of suppliers, products, stock levels, customer orders, billing, and purchase information. It allows businesses to maintain a streamlined inventory system, track sales, manage stock quantities, and ensure a smooth supply chain flow. 🚀📊💼🛒💰
+
+
+
+# MYSQL CERTIFICATE BY TESTDOME 
+<a href="https://www.testdome.com/certificates/9125139ec5c64d13b09b20af067c46a0" class="testdome-certificate-stamp gold">
+          <span class="testdome-certificate-name">Suman Sourabh</span>
+          <span class="testdome-certificate-test-name">SQL</span>
+          <span class="testdome-certificate-card-logo">TestDome<br>Certificate</span>
+      </a>
+      <script>
+          var stylesheet = "https://www.testdome.com/content/source/stylesheets/embed.css",
+          link = document.createElement("link");
+          link.href = stylesheet,
+          link.type = "text/css",
+          link.rel = "stylesheet",
+          link.media = "screen,print",
+          document.getElementsByTagName("head")[0].appendChild(link);
+      </script>
