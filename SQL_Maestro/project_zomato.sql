@@ -51,30 +51,30 @@ SELECT * FROM GOLDUSERS_SIGNUP;
 SELECT * FROM USERS;
 
 
-## 1- what is the total amount each customer spent on zomato?
+-- 1- what is the total amount each customer spent on zomato?
 
 SELECT A.USER_ID, SUM(B.PRICE) Total_Amt_spent FROM SALES A
 INNER JOIN 
 PRODUCT B ON A.PRODUCT_ID = B.PRODUCT_ID 
 GROUP BY A.USER_ID;
 
-# 2- how many days each customer visited on zomato?  
+-- 2- how many days each customer visited on zomato? 
 
 SELECT USER_ID, COUNT(DISTINCT CREATED_DATE) FROM SALES GROUP BY USER_ID;
 
-# 3- what was the first product purchased by each customer of zomato?
+-- 3- what was the first product purchased by each customer of zomato?
 
 SELECT * FROM
 (SELECT *, RANK() OVER ( PARTITION BY USER_ID ORDER BY CREATED_DATE ) RANK FROM SALES) 
 A WHERE RANK = 1;
 
-# 4- what is the most purchase item on the menu ? 
+-- 4- what is the most purchase item on the menu ?
     
 SELECT TOP 2 PRODUCT_ID FROM SALES
 GROUP BY PRODUCT_ID
 ORDER BY COUNT(PRODUCT_ID) DESC;
 
-# 5- how many times that most selling item purchased by all customers?
+-- 5- how many times that most selling item purchased by all customers?
 
 SELECT * FROM SALES
 WHERE PRODUCT_ID = 
@@ -82,7 +82,7 @@ WHERE PRODUCT_ID =
 GROUP BY PRODUCT_ID
 ORDER BY COUNT(PRODUCT_ID) DESC);
 
-# 6- which user_id purchased top most selling product?
+-- 6- which user_id purchased top most selling product?
 
 SELECT USER_ID, COUNT(PRODUCT_ID) P_CNT FROM SALES
 WHERE PRODUCT_ID = 
@@ -92,7 +92,7 @@ ORDER BY COUNT(PRODUCT_ID) DESC)
 GROUP BY USER_ID;
 
 
-# 7- which item was most popular for each customer?
+-- 7- which item was most popular for each customer?
 
 SELECT * FROM
 (SELECT *, RANK() OVER (PARTITION BY USER_ID 
@@ -101,3 +101,153 @@ ORDER BY PURCHASE_CNT DESC) RNK FROM
 GROUP BY USER_ID, PRODUCT_ID) A)B 
 
 WHERE RNK = 2;
+
+
+-- 8. which item was purchased first by the customer after they became a member?
+
+SELECT * FROM
+(SELECT C.*, RANK() OVER (PARTITION BY USER_ID ORDER BY CREATED_DATE) AS RNK FROM 
+(SELECT A.USER_ID, A.CREATED_DATE, A.PRODUCT_ID, B.GOLD_SIGNUP_DATE FROM SALES A
+INNER JOIN GOLDUSERS_SIGNUP B
+ON A.USER_ID = B.USER_ID
+WHERE CREATED_DATE >= GOLD_SIGNUP_DATE) C)D WHERE RNK = 1 ;
+
+
+-- 9. Which item was purchased just before customer becaming a gold member ?
+
+SELECT * FROM 
+(SELECT C.* , RANK() OVER (PARTITION BY USER_ID ORDER BY CREATED_DATE) AS RNK FROM
+(SELECT A.USER_ID, A.CREATED_DATE, A.PRODUCT_ID, B.GOLD_SIGNUP_DATE FROM SALES A
+INNER JOIN GOLDUSERS_SIGNUP B
+ON A.USER_ID = B.USER_ID
+WHERE CREATED_DATE <= GOLD_SIGNUP_DATE) C) D WHERE RNK = 1;
+
+
+-- 10. What is the total orders and amount spent for each member before they became a member?
+
+SELECT USER_ID, COUNT(CREATED_DATE), SUM(PRICE) AS TOTAL_AMT_SPENT FROM 
+(SELECT C.*, D.PRICE FROM 
+(SELECT A.USER_ID, A.CREATED_DATE, A.PRODUCT_ID, B.GOLD_SIGNUP_DATE FROM SALES A
+INNER JOIN GOLDUSERS_SIGNUP B
+ON A.USER_ID = B.USER_ID
+WHERE CREATED_DATE <= GOLD_SIGNUP_DATE ) C 
+INNER JOIN PRODUCT D 
+ON C.PRODUCT_ID = D.PRODUCT_ID) E
+GROUP BY USER_ID;
+
+
+ /* 11. 1.  If buying each product generate points for eg 5 rs = 2 zomato point and each
+       product has different purchaseing points for eg for prod 1 5 rs = 1 zomato 
+	   point, for prod2 10 rs = 5 zomato point and prod3  5rs =1 zomato point.
+	    
+	   2.Calcualate the points collected by each customers and 
+	   3. for which most points have been given till now .  */
+
+
+
+
+SELECT E.* , T_PRICE/POINT AS TOTAL_POINTS FROM 
+(SELECT D.*, CASE WHEN PRODUCT_ID = 1 THEN 5 WHEN PRODUCT_ID = 2 THEN 2 
+WHEN PRODUCT_ID = 3 THEN 5 ELSE 0 END AS POINT FROM
+(SELECT C.USER_ID, C.PRODUCT_ID, SUM(PRICE) AS T_PRICE FROM
+(SELECT A.*, B.PRICE FROM SALES A
+INNER JOIN PRODUCT B
+ON A.PRODUCT_ID = B.PRODUCT_ID) C
+GROUP BY USER_ID, PRODUCT_ID) D) E ;
+
+
+
+SELECT USER_ID, SUM(TOTAL_POINTS)*2.5 AS TOTAL_MONEY_EARNED FROM
+(SELECT E.* , T_PRICE/POINT AS TOTAL_POINTS FROM 
+(SELECT D.*, CASE WHEN PRODUCT_ID = 1 THEN 5 WHEN PRODUCT_ID = 2 THEN 2 
+WHEN PRODUCT_ID = 3 THEN 5 ELSE 0 END AS POINT FROM
+(SELECT C.USER_ID, C.PRODUCT_ID, SUM(PRICE) AS T_PRICE FROM
+(SELECT A.*, B.PRICE FROM SALES A
+INNER JOIN PRODUCT B
+ON A.PRODUCT_ID = B.PRODUCT_ID) C
+GROUP BY USER_ID, PRODUCT_ID) D) E) F
+GROUP BY USER_ID;
+
+
+
+SELECT * FROM
+(SELECT G.*, RANK() OVER (ORDER BY TOTAL_POINT_EARNED DESC) AS RNK FROM
+(SELECT PRODUCT_ID , SUM(TOTAL_POINTS) AS TOTAL_POINT_EARNED FROM  
+(SELECT E.* , T_PRICE/POINT AS TOTAL_POINTS FROM 
+(SELECT D.*, CASE WHEN PRODUCT_ID = 1 THEN 5 WHEN PRODUCT_ID = 2 THEN 2 
+WHEN PRODUCT_ID = 3 THEN 5 ELSE 0 END AS POINT FROM
+(SELECT C.USER_ID, C.PRODUCT_ID, SUM(PRICE) AS T_PRICE FROM
+(SELECT A.*, B.PRICE FROM SALES A
+INNER JOIN PRODUCT B
+ON A.PRODUCT_ID = B.PRODUCT_ID) C
+GROUP BY USER_ID, PRODUCT_ID) D) E)F
+GROUP BY PRODUCT_ID)G)H
+WHERE RNK = 1 ;
+
+
+
+/* 12. 1) In the first one year after a customer joins the gold program(including their
+join date) irrespective of what the customer has purchased they earn 5 zomato points 
+for every 10 rs spent who earned more 1 or 3 and what was their earnings in their 
+first yr? 
+
+2) 1 zomato point = 2 rs*/
+
+
+SELECT A.USER_ID, A.CREATED_DATE, A.PRODUCT_ID, B.GOLD_SIGNUP_DATE FROM SALES A
+INNER JOIN GOLDUSERS_SIGNUP B
+ON A.USER_ID = B.USER_ID
+/* To get the earning for 1 yr from now we can't simply add the day to get
+    the date simply. like as done below 
+    
+WHERE CREATED_DATE >= GOLD_SIGNUP_DATE AND CREATED_DATE <= GOLD_SIGNUP_DATE+365  */ 
+
+WHERE CREATED_DATE >= GOLD_SIGNUP_DATE AND CREATED_DATE <= DATEADD(YEAR, 1, GOLD_SIGNUP_DATE);
+
+
+SELECT C.*, D.PRICE FROM 
+(SELECT A.USER_ID, A.CREATED_DATE, A.PRODUCT_ID, B.GOLD_SIGNUP_DATE FROM SALES A
+INNER JOIN GOLDUSERS_SIGNUP B
+ON A.USER_ID = B.USER_ID
+WHERE CREATED_DATE >= GOLD_SIGNUP_DATE 
+AND 
+CREATED_DATE <= DATEADD(YEAR, 1, GOLD_SIGNUP_DATE))C
+INNER JOIN PRODUCT D 
+ON C.PRODUCT_ID = D.PRODUCT_ID;
+
+
+-- 0.5 ZOMATO POINT = 1 RS
+
+SELECT C.*, D.PRICE*0.5 FROM 
+(SELECT A.USER_ID, A.CREATED_DATE, A.PRODUCT_ID, B.GOLD_SIGNUP_DATE FROM SALES A
+INNER JOIN GOLDUSERS_SIGNUP B
+ON A.USER_ID = B.USER_ID
+WHERE CREATED_DATE >= GOLD_SIGNUP_DATE 
+AND 
+CREATED_DATE <= DATEADD(YEAR, 1, GOLD_SIGNUP_DATE))C
+INNER JOIN PRODUCT D 
+ON C.PRODUCT_ID = D.PRODUCT_ID;
+
+
+
+/* 13. Rank all the transaction of the customers */
+
+
+SELECT *, RANK() OVER(PARTITION BY USER_ID ORDER BY CREATED_DATE) AS RNK FROM SALES;
+
+
+/* 14. Rank all the transaction for each number whenever they are a zomato number for 
+       every non gold number transaction mark as NA */
+
+
+SELECT E.*, CASE WHEN RNK = 0 THEN 'NA' else RNK END AS RNKK FROM
+(SELECT C.*, CAST((CASE WHEN GOLD_SIGNUP_DATE IS NULL THEN 0 
+ELSE RANK() OVER (PARTITION BY USER_ID ORDER BY CREATED_DATE DESC ) END) AS VARCHAR)
+AS RNK FROM 
+
+(SELECT A.USER_ID, A.CREATED_DATE, A.PRODUCT_ID, B.GOLD_SIGNUP_DATE FROM SALES A
+LEFT JOIN GOLDUSERS_SIGNUP B
+ON A.USER_ID = B.USER_ID
+AND CREATED_DATE >= GOLD_SIGNUP_DATE ) C)E;
+
+
