@@ -103,17 +103,20 @@ SELECT DISTINCT(category) FROM retail_sales;
 -----------------------------------------------------------------------------------
 --- DATA ANALYSIS & BUSINESS KEY PROBLEM & ANSWER
 
--- Q1. Write a SQL query to retrieve all columns for sales made on '2022-11-05'
+1. **Write a SQL query to retrieve all columns for sales made on '2022-11-05'
 
+--sql
 SELECT * FROM retail_sales
 WHERE sale_date = '2022-11-05';
 
 SELECT SUM(total_sale) FROM retail_sales
 WHERE sale_date = '2022-11-05';
 
--- Q2. Write a SQL query to retrieve all transactions where the category is 'Clothing'
---     and the quantity sold is more than 4 in th month of Nov-2022.
+--sql
 
+2. **Write a SQL query to retrieve all transactions where the category is 'Clothing' and the quantity sold is more than 4 in th month of Nov-2022.
+
+--sql
 SELECT * FROM retail_sales
 WHERE category = 'Clothing' 
 		AND 
@@ -122,11 +125,14 @@ WHERE category = 'Clothing'
 		quantity >= 4;
 
 select * from retail_sales;
+--sql
 
--- Q3 : Calculate SQL query to calculate the total sales (Total_sales) for each category.
+3. **Calculate SQL query to calculate the total sales (Total_sales) for each category.
 
 --sql
-SELECT SUM(total_sale) as total_sales, category, COUNT(*) AS total_order
+SELECT 
+	SUM(total_sale) as total_sales, 
+	category, COUNT(*) AS total_order
 FROM retail_sales
 GROUP BY category
 HAVING category IN 
@@ -136,34 +142,37 @@ HAVING category IN
 --sql
 
 
--- Q4 : Write a SQL query to find the average age of customers who purchased
---       items from the 'Beauty' category . 
+4. **Write a SQL query to find the average age of customers who purchased items from the 'Beauty' category . 
 
 --sql
-SELECT ROUND(AVG(age)) as avg_age
+SELECT 
+	ROUND(AVG(age)) as avg_age
 FROM retail_sales
 WHERE category = 'Beauty'; 
 
 --sql
 
--- Q5 : Write a SQL query to find all transaction where the total_sale is greater 
---      than 1000
+5. **Write a SQL query to find all transaction where the total_sale is greater than 1000
 
 --sql
 SELECT * FROM retail_sales
 WHERE total_sale > 1000;
 
--- Q6 : Write a SQL query to find out the total number of transactions (transaction_id)
----     made by each gender in each category .
+--sql
 
-SELECT category, gender, COUNT(transaction_id) as total_order 
+
+6. **Write a SQL query to find out the total number of transactions (transaction_id) made by each gender in each category .
+
+--sql
+SELECT 
+	category, gender, 
+	COUNT(transaction_id) as total_order 
 FROM retail_sales
 GROUP BY category, gender
 ORDER BY category;
 --sql
 
--- Q7 : Write a SQL query to calculate the average sale for each month. 
---      Find out the best selling month in each year.
+7. **Write a SQL query to calculate the average sale for each month. Find out the best selling month in each year.
 
 --sql
 SELECT Year, 
@@ -184,8 +193,7 @@ SELECT Year,
 WHERE RANK = 1;
 --sql
 
--- Q8 : Write a SQL query to find the top 5 customers based on the highest
---      total sales.
+8. **Write a SQL query to find the top 5 customers based on the highest total sales.
 
 --sql
 SELECT 
@@ -200,8 +208,8 @@ LIMIT 5;
 select * from retail_sales;
 --sql
 
--- Q9 : Write a query to find out the total number of unique customers who purchased
---      items from each category.
+9. **Write a query to find out the total number of unique customers who purchased items from each category.
+
 --sql
 SELECT category, 
 		COUNT(DISTINCT(customer_id)) AS UNI_CUSTOMER
@@ -211,8 +219,7 @@ ORDER BY 1;
 
 --sql
 
--- Q10 : Write a SQL query to create each shift and number of orders
---       (Example Morning <= 12, Afternoon between 12 & 17, evening >17)
+10. **Write a SQL query to create each shift and number of orders (Example Morning <= 12, Afternoon between 12 & 17, evening >17)
 
 --sql
 SELECT * FROM retail_sales
@@ -235,3 +242,4 @@ FROM hourly_sale
 GROUP BY shift;
 
 --sql
+
