@@ -125,6 +125,7 @@ select * from retail_sales;
 
 -- Q3 : Calculate SQL query to calculate the total sales (Total_sales) for each category.
 
+--sql
 SELECT SUM(total_sale) as total_sales, category, COUNT(*) AS total_order
 FROM retail_sales
 GROUP BY category
@@ -132,17 +133,23 @@ HAVING category IN
 	(SELECT category 
 		FROM retail_sales 
 		GROUP BY category);
+--sql
+
 
 -- Q4 : Write a SQL query to find the average age of customers who purchased
 --       items from the 'Beauty' category . 
 
+--sql
 SELECT ROUND(AVG(age)) as avg_age
 FROM retail_sales
 WHERE category = 'Beauty'; 
 
+--sql
+
 -- Q5 : Write a SQL query to find all transaction where the total_sale is greater 
 --      than 1000
 
+--sql
 SELECT * FROM retail_sales
 WHERE total_sale > 1000;
 
@@ -153,10 +160,12 @@ SELECT category, gender, COUNT(transaction_id) as total_order
 FROM retail_sales
 GROUP BY category, gender
 ORDER BY category;
+--sql
 
 -- Q7 : Write a SQL query to calculate the average sale for each month. 
 --      Find out the best selling month in each year.
 
+--sql
 SELECT Year, 
 		Month,
 		avg_sale FROM 
@@ -173,11 +182,12 @@ SELECT Year,
 	GROUP BY Year, Month
 	ORDER BY Year, avg_sale desc) AS t1 
 WHERE RANK = 1;
-
+--sql
 
 -- Q8 : Write a SQL query to find the top 5 customers based on the highest
 --      total sales.
 
+--sql
 SELECT 
 		customer_id,
 		SUM(total_sale) as Total_sale
@@ -188,19 +198,23 @@ ORDER BY 2 DESC
 LIMIT 5;
 
 select * from retail_sales;
+--sql
 
 -- Q9 : Write a query to find out the total number of unique customers who purchased
 --      items from each category.
-
+--sql
 SELECT category, 
 		COUNT(DISTINCT(customer_id)) AS UNI_CUSTOMER
 FROM retail_sales
 GROUP BY 1
 ORDER BY 1;
 
+--sql
+
 -- Q10 : Write a SQL query to create each shift and number of orders
 --       (Example Morning <= 12, Afternoon between 12 & 17, evening >17)
 
+--sql
 SELECT * FROM retail_sales
 WITH hourly_sale 
 AS
@@ -219,3 +233,5 @@ SELECT
 	COUNT(*)
 FROM hourly_sale
 GROUP BY shift;
+
+--sql
