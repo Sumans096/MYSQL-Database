@@ -103,13 +103,14 @@ SELECT DISTINCT(category) FROM retail_sales;
 -----------------------------------------------------------------------------------
 --- DATA ANALYSIS & BUSINESS KEY PROBLEM & ANSWER
 
--- Q1. Write a SQL query to retrieve all columns for sales made on '2022-11-05'
-
+**Q1. Write a SQL query to retrieve all columns for sales made on '2022-11-05'
+--sql
 SELECT * FROM retail_sales
 WHERE sale_date = '2022-11-05';
 
 SELECT SUM(total_sale) FROM retail_sales
 WHERE sale_date = '2022-11-05';
+--sql
 
 -- Q2. Write a SQL query to retrieve all transactions where the category is 'Clothing'
 --     and the quantity sold is more than 4 in th month of Nov-2022.
@@ -219,3 +220,4 @@ SELECT
 	COUNT(*)
 FROM hourly_sale
 GROUP BY shift;
+
